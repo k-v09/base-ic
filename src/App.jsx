@@ -1,35 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import axios from 'axios';
 
-function App() {
-  const [count, setCount] = useState(0)
+const Home = () => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('/api/data');
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div>
+      <h1>Home</h1>
+      <ul>
+        {data.map((item, index) => (
+          <li key={index}>{item.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
-export default App
+const About = () => {
+  return (
+    <div>
+      <h1>About</h1>
+      <p>This is a barebones React application.</p>
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <Router>
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/about">About</Link>
+            </li>
+          </ul>
+        </nav>
+
+        <Routes>
+          <Route path="/" exact element={<Home />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+};
+
+export default App;
